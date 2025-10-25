@@ -1,0 +1,32 @@
+<p>Total Order Price is {{ totalOrderPrice }}</p>
+<div class="mb-3">
+  <label for="" class="form-label" >category</label>
+  <select class="form-select form-select-lg" name="" id="" [(ngModel)]="selectedCatId">
+    <option *ngFor="let cat of categories" [value]=" cat.id ">
+      {{ cat.name }}
+    </option>
+  </select>
+</div>
+{{ selectedCatId }}
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  <!-- <div *ngFor="let prd of products; let i=index, track:trackby" class="col" [style.display]="prd.catId == selectedCatId ? 'block' : 'none'"> -->
+      <div *ngFor="let prd of products; let i=index, track:trackby" class="col">
+
+    <div class="card" >
+      <img BorderImage="teal" defualtColor="pink" src="{{ prd.imgUrl }}" class="card-img-top" alt="..." />
+      <div class="card-body">
+        <h5 class="card-title">{{i}} {{ prd.name|astreskSep }}</h5>
+        <h5 class="card-title"> quantity is {{ prd.quantity }}</h5>
+        <h5 class="card-title">price is {{ prd.price }}</h5>
+        <input type="number" #itemCount class="form-control mb-3" />
+        <button
+          class="btn btn-success"
+          (click)="buy(prd.price, itemCount.value)"
+        >
+          BUY
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
