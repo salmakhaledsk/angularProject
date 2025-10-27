@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Iproduct } from '../../models/iproduct';
 import { CommonModule } from '@angular/common';
 import { ICategory } from '../../models/icategory';
 import {  FormsModule } from '@angular/forms';
 import { BorderImageDirective } from '../../directive/border-image.directive';
 import { AstreskSepPipe } from '../../pipes/astresk-sep.pipe';
+import { StaticProductsService } from '../services/static-products.service';
+
 
 
 @Component({
@@ -15,109 +17,43 @@ import { AstreskSepPipe } from '../../pipes/astresk-sep.pipe';
 })
 export class ProductsComponent {
   totalOrderPrice:number=0;
-  selectedCatId:number=1;
+  filteredProducts:Iproduct[];
+  // selectedCatId:number=1;
   products: Iproduct[];
-  categories:ICategory[]
+  @Input () receivedSelectedCatId:number=1
+  @Output() onTotalPriceChanged:EventEmitter<number>
+  
 
-  constructor() {
-    this.products = [
-      {
-        id: 1,
-        name: 'product1',
-        price: 100,
-        quantity: 10,
-        imgUrl:
-          'https://fastly.picsum.photos/id/509/200/200.jpg?hmac=F3VucjvZ_2eEx_ObPM7NJ_Ymq5jESSGCuXo_8japTZc',
-        catId: 1,
-      },
-      {
-        id: 2,
-        name: 'product2',
-        price: 200,
-        quantity: 20,
-        imgUrl:
-          'https://fastly.picsum.photos/id/509/200/200.jpg?hmac=F3VucjvZ_2eEx_ObPM7NJ_Ymq5jESSGCuXo_8japTZc',
-        catId: 2,
-      },
-      {
-        id: 3,
-        name: 'product3',
-        price: 300,
-        quantity: 30,
-        imgUrl:
-          'https://fastly.picsum.photos/id/509/200/200.jpg?hmac=F3VucjvZ_2eEx_ObPM7NJ_Ymq5jESSGCuXo_8japTZc',
-        catId: 3,
-      },
-      {
-        id: 4,
-        name: 'product4',
-        price: 400,
-        quantity: 40,
-        imgUrl:
-          'https://fastly.picsum.photos/id/509/200/200.jpg?hmac=F3VucjvZ_2eEx_ObPM7NJ_Ymq5jESSGCuXo_8japTZc',
-        catId: 1,
-      },
-      {
-        id: 5,
-        name: 'product5',
-        price: 500,
-        quantity: 50,
-        imgUrl:
-          'https://fastly.picsum.photos/id/509/200/200.jpg?hmac=F3VucjvZ_2eEx_ObPM7NJ_Ymq5jESSGCuXo_8japTZc',
-        catId: 2,
-      },
-      {
-        id: 6,
-        name: 'product6',
-        price: 600,
-        quantity: 60,
-        imgUrl:
-          'https://fastly.picsum.photos/id/509/200/200.jpg?hmac=F3VucjvZ_2eEx_ObPM7NJ_Ymq5jESSGCuXo_8japTZc',
-        catId: 3,
-      },
-      {
-        id: 7,
-        name: 'product7',
-        price: 700,
-        quantity: 70,
-        imgUrl:
-          'https://fastly.picsum.photos/id/509/200/200.jpg?hmac=F3VucjvZ_2eEx_ObPM7NJ_Ymq5jESSGCuXo_8japTZc',
-        catId: 3,
-      },
-      {
-        id: 8,
-        name: 'product8',
-        price: 800,
-        quantity: 80,
-        imgUrl:
-          'https://fastly.picsum.photos/id/509/200/200.jpg?hmac=F3VucjvZ_2eEx_ObPM7NJ_Ymq5jESSGCuXo_8japTZc',
-        catId: 3,
-      },
-      {
-        id: 9,
-        name: 'product9',
-        price: 900,
-        quantity: 90,
-        imgUrl:
-          'https://fastly.picsum.photos/id/509/200/200.jpg?hmac=F3VucjvZ_2eEx_ObPM7NJ_Ymq5jESSGCuXo_8japTZc',
-        catId: 3,
-      },
-    ];
+  constructor(private PrdService:StaticProductsService) {
 
-    this.categories=[
-      {id:1,name:'mobile'},
-      {id:2,name:'laptop'},
-      {id:3,name:'tablet'},
-    ]
+    this.products = this.PrdService.products;
+
+  
+    this.filteredProducts=this.products
+     this.onTotalPriceChanged=new EventEmitter<number>();
+
   }
 
   buy(Price:number,count:string){
-    this.totalOrderPrice=Price*+count
+    this.totalOrderPrice+=Price*+count
     // this.totalOrderPrice=Price*Number(count)
     // this.totalOrderPrice=Price*parseInt(count)
+    this.onTotalPriceChanged.emit(this.totalOrderPrice)
   }
 ////track all element element by ellement if any change in unique one fix ut onbly not all collection
   trackby(index:number,prd:Iproduct){
     return index;
+  }
+
+  // filterProducts(){
+  //   this.filteredProducts = this.products.filter((prd) => prd.catId == this.receivedSelectedCatId);
+  // }
+//   ngOnChanges(){
+// this.filterProducts();
+    
+//   }
+
+  ngOnChanges(){
+  this.filteredProducts= this.PrdService.gatproductsByCatId(this.receivedSelectedCatId)
   }
 }
